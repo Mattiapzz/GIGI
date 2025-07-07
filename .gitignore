@@ -45,11 +45,15 @@ text.txt
 test.txt
 
 vehicle_objects/
-/data/
+
 
 xcode/
 
 data/ard
 data/FWBW
+# data/circuit
 
 src_tests/Z*
+
+data/output_*.txt
+
