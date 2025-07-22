@@ -308,12 +308,12 @@ int main(int argc, char *argv[])
   auto elapsed_microsec = std::chrono::duration_cast<std::chrono::microseconds>(end - start);
 
 
-  std::cout << "\n========== FWBW Results ==========\n";
+  std::cout << "\n============ FBGA Results ============\n";
   std::cout << " > CPU time:                " << elapsed_microsec.count() / 1000.0 << " ms\n";
   std::cout << " > Total lap time:          " << T << " s\n";
   std::cout << " > Number of segments:      " << numpts_gg << "\n";
   std::cout << " > Average time/segment:    " << static_cast<double>(elapsed_microsec.count()) / numpts_gg << " μs\n";
-  std::cout << "==================================\n";
+  std::cout << "======================================\n\n";
 
 
 
