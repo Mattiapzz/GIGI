@@ -1,8 +1,9 @@
-GIGI
+FBGA
 =========
 
-GIGI Generic Iterative Ggv Integration is a library specifically developed for a scientific publication submitted to RAL. This library will later evolve into a generic tool including multiple dimensions constraints and a more general approach to the problem.
-The library is able to compute the maximum performance longitudinal maneuver given a generic ggv envelope and a curvature profile (i.e., the trajectory path).
+FBGA - Forward Backward Generic Acceleration constraints is a library specifically developed to solve optimal velocity profile given a complex g-g-v constraint envelope the described implementation is under review in the Robotics and Automation Letters (RAL) journal.
+This library will later evolve into a generic tool including multiple dimensions constraints and a more general approach to the problem.
+The library is able to compute the maximum performance longitudinal maneuver given a generic g-g-v envelope and a curvature profile (i.e., the trajectory path).
 
 ## Requirements
 
@@ -16,14 +17,18 @@ The library is able to compute the maximum performance longitudinal maneuver giv
 
 Some third party libraries are needed to compile the project.
 
-need to run the following command to install the third party libraries:
+You will need to run the following command to install the third party libraries:
 
 ```{shell}
 ./third_party.sh
 ```
 
 The library is self-contained and standalone, so you don't need to install any other library to use it as is. Third party libraries are used for testing and development purposes.
-  
+
+<!-- Note -->
+
+**Note**: The third party libraries are not included in the repository, so you need to run the command above to download them. Please make sure you have an internet connection when running the command and that you have the necessary permissions to install the libraries.
+
 ## Building
 
 To install the project you need to run the following commands:
@@ -53,4 +58,12 @@ mkdir -p build
 cd build
 cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..
 make -j
+```
+
+### Running the examples 
+
+To run the tests you can use the following command:
+
+```{shell}
+./bin/GIGI_test_moto.exe
 ```
