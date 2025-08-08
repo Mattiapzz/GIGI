@@ -4,6 +4,7 @@
 #include <stdexcept>
 
 #include <iostream>
+#include <string>
 
 
 namespace GG
