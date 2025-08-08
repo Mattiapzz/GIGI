@@ -112,6 +112,12 @@ Run the example script:
 python test_example.py
 ```
 
+This will run the optimization using the exact same data as the C++ test and display plots showing:
+- Velocity profile along the track
+- Longitudinal acceleration profile  
+- Lateral acceleration profile with track curvature overlay
+- G-G diagram showing the acceleration trajectory
+
 ## Constants
 
 The following constants are available:

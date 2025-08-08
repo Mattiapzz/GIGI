@@ -4,6 +4,7 @@ Example usage of the GIGI Python bindings - matching C++ test data exactly
 """
 
 import numpy as np
+import matplotlib.pyplot as plt
 import pygigi
 
 def example_usage():
@@ -13,9 +14,10 @@ def example_usage():
     print(" > Running test F1/10 (Python version)")
     
     # 1. Define track data - EXACT SAME AS C++ TEST
-    SS_vec = [0.0, 10.0, 20.0, 30.0, 40.0]  # Arc length [m]
-    KK_vec = [0.001, 0.01, 0.005, -0.01, 0.0]  # Curvature [1/m]
-    v_initial = 1.0  # Initial velocity [m/s]
+    SS_vec = [0.0, 10, 20.0, 30.0, 40.0, 50.0]  # Arc length [m]
+    KK_vec = [0.0, 0.0, 0.01, 0.005, -0.01, 0.0]  # Curvature [1/m]
+    KK_vec = [k * 10.0 for k in KK_vec]  # Convert to 1/m for consistency with C++ test
+    v_initial = 5.0  # Initial velocity [m/s]
     
     print(f" > Track data:")
     print(f" >   SS_vec: {len(SS_vec)} points")
@@ -25,7 +27,7 @@ def example_usage():
         print(f" >   SS[{i}]: {SS_vec[i]}, KK[{i}]: {KK_vec[i]}")
     
     # Interpolate track data to get evaluation points (like C++ does)
-    numpt_eval = int(np.ceil(SS_vec[-1]))  # 40 points
+    numpt_eval = int(np.ceil(SS_vec[-1]))*10  # 40 points
     ds = SS_vec[-1] / (numpt_eval - 1)
     SS_eval_vec = [i * ds for i in range(numpt_eval)]
     
@@ -153,6 +155,91 @@ def example_usage():
     print(f"Gravity: {pygigi.GRAVITY} m/s²")
     print(f"Pi: {pygigi.PI}")
     print(f"Degrees to radians: {pygigi.DEG2RAD}")
+    
+    # Create plots
+    print("\nCreating plots...")
+    fig, (ax1, ax2, ax3) = plt.subplots(3, 1, figsize=(10, 12))
+    
+    # Plot 1: Velocity vs Position
+    ax1.plot(SS_eval_vec, VX_eval_vec, 'b-', linewidth=2, label='Velocity')
+    ax1.set_xlabel('Position s [m]')
+    ax1.set_ylabel('Velocity [m/s]')
+    ax1.set_title('Optimal Velocity Profile')
+    ax1.grid(True, alpha=0.3)
+    ax1.legend()
+    
+    # Plot 2: Longitudinal Acceleration vs Position
+    ax2.plot(SS_eval_vec, AX_eval_vec, 'r-', linewidth=2, label='Longitudinal Acceleration')
+    ax2.set_xlabel('Position s [m]')
+    ax2.set_ylabel('Longitudinal Acceleration [m/s²]')
+    ax2.set_title('Longitudinal Acceleration Profile')
+    ax2.grid(True, alpha=0.3)
+    ax2.legend()
+    ax2.axhline(y=0, color='k', linestyle='--', alpha=0.5)
+    
+    # Plot 3: Lateral Acceleration vs Position
+    ax3.plot(SS_eval_vec, AY_eval_vec, 'g-', linewidth=2, label='Lateral Acceleration')
+    ax3.set_xlabel('Position s [m]')
+    ax3.set_ylabel('Lateral Acceleration [m/s²]')
+    ax3.set_title('Lateral Acceleration Profile')
+    ax3.grid(True, alpha=0.3)
+    ax3.legend()
+    ax3.axhline(y=0, color='k', linestyle='--', alpha=0.5)
+    
+    # Also plot the track curvature as a secondary axis for reference
+    ax3_twin = ax3.twinx()
+    ax3_twin.plot(SS_eval_vec, KK_eval_vec, 'orange', linestyle=':', alpha=0.7, label='Curvature')
+    ax3_twin.set_ylabel('Curvature [1/m]', color='orange')
+    ax3_twin.tick_params(axis='y', labelcolor='orange')
+    ax3_twin.legend(loc='upper right')
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # Also create a 3D acceleration-velocity plot
+    fig2 = plt.figure(figsize=(12, 8))
+    ax4 = fig2.add_subplot(111, projection='3d')
+    
+    # Plot the trajectory in 3D space (ay, velocity, ax)
+    ax4.plot(AY_eval_vec, VX_eval_vec, AX_eval_vec, 'bo-', markersize=4, linewidth=2, label='Trajectory', alpha=0.8)
+    ax4.scatter(AY_eval_vec[0], VX_eval_vec[0], AX_eval_vec[0], color='green', s=100, label='Start', alpha=1.0)
+    ax4.scatter(AY_eval_vec[-1], VX_eval_vec[-1], AX_eval_vec[-1], color='red', s=100, label='End', alpha=1.0)
+    
+    # Create mesh grid for spline data visualization
+    ay_grid, vx_grid = np.meshgrid(AY_spline, VX_spline, indexing='ij')
+    
+    # Reshape the spline data to match the grid (11 ay points x 5 vx points = 55 elements)
+    ax_max_grid = np.array(AX_spline_max).reshape(len(AY_spline), len(VX_spline))
+    ax_min_grid = np.array(AX_spline_min).reshape(len(AY_spline), len(VX_spline))
+    
+    # Plot the spline surfaces
+    ax4.plot_surface(ay_grid, vx_grid, ax_max_grid, alpha=0.3, color='red', label='Max Acceleration Surface')
+    ax4.plot_surface(ay_grid, vx_grid, ax_min_grid, alpha=0.3, color='blue', label='Min Acceleration Surface')
+    
+    # Plot spline data points for reference
+    ay_flat = ay_grid.flatten()
+    vx_flat = vx_grid.flatten()
+    ax_max_flat = ax_max_grid.flatten()
+    ax_min_flat = ax_min_grid.flatten()
+    
+    # Plot max acceleration points
+    ax4.scatter(ay_flat, vx_flat, ax_max_flat, color='red', alpha=0.6, s=20, label='Max Accel Points')
+    # Plot min acceleration points  
+    ax4.scatter(ay_flat, vx_flat, ax_min_flat, color='blue', alpha=0.6, s=20, label='Min Accel Points')
+    
+    ax4.set_xlabel('Lateral Acceleration ay [m/s²]')
+    ax4.set_ylabel('Velocity v [m/s]')
+    ax4.set_zlabel('Longitudinal Acceleration ax [m/s²]')
+    ax4.set_title('3D G-G-V Diagram - Trajectory in Acceleration-Velocity Space')
+    ax4.legend()
+    
+    # Set viewing angle for better visualization
+    ax4.view_init(elev=20, azim=45)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    print("Plots displayed. Close the plot windows to continue.")
 
 if __name__ == "__main__":
     try:
