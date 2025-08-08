@@ -57,3 +57,4 @@ src_tests/Z*
 
 data/output_*.txt
 
+**/pygigi.cpython-39-darwin.so 
