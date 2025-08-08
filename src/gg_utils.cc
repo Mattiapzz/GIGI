@@ -187,7 +187,7 @@ namespace GG
     {
       for (integer i = 0; i < (integer) vec.size() - 1; ++i) 
       {
-        if (value >= vec[i] && value < vec[i+1])
+        if (value >= vec[i] && value <= vec[i+1])
         {
           seg = i;
           break;

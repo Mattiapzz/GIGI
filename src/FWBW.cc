@@ -23,6 +23,26 @@ FWBW::FWBW(
   this->dump_seg_id.reserve(DEFAULT_SIZE);
 }
 
+FWBW::FWBW()
+  : gg_Upper(nullptr), gg_Lower(nullptr), gg_range({nullptr, nullptr})
+{
+  this->Segments.reserve(DEFAULT_SIZE);
+  this->Vmax_vec.reserve(DEFAULT_SIZE);
+  this->dump_seg_id.reserve(DEFAULT_SIZE);
+}
+
+void 
+FWBW::setup_functions(
+  const std::function<real(real, real)> &gg_Upper,
+  const std::function<real(real, real)> &gg_Lower,
+  const gg_range_max_min &gg_range
+)
+{
+  this->gg_Upper = gg_Upper;
+  this->gg_Lower = gg_Lower;
+  this->gg_range = gg_range;
+}
+
 // --------------------------------------------------------------------------------------------
 
 bool FWBW::is_in_range(const real ax, const real ay, const real v) const

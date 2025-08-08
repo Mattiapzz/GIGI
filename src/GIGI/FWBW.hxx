@@ -52,9 +52,16 @@ private:
   std::vector<real> K_vec;       // Vector of curvatures
   real v_I{0.0};                 // Initial velocity
   std::vector<int> dump_seg_id;  // Vector of segments with problems for debug
+protected:
+  FWBW();
 public:
   // constructors
   FWBW(
+    const std::function<real(real, real)> &gg_Upper,
+    const std::function<real(real, real)> &gg_Lower,
+    const gg_range_max_min &gg_range
+  );
+  void setup_functions(
     const std::function<real(real, real)> &gg_Upper,
     const std::function<real(real, real)> &gg_Lower,
     const gg_range_max_min &gg_range
