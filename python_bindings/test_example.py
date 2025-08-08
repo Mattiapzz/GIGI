@@ -1,7 +1,4 @@
 #!/usr/bin/env python3
-"""
-Example usage of the GIGI Python bindings - matching C++ test data exactly
-"""
 
 import numpy as np
 import matplotlib.pyplot as plt

@@ -18,6 +18,7 @@ The Python bindings provide access to the main GIGI functionality, specifically:
   - `FB_F1_10(spline_data)` - Using `GGVSplineData` struct
 
 ### FWBW Methods (inherited by FB_F1_10)
+
 - `compute(SS, KK, v0)` - Main forward-backward algorithm
 - `evaluate(SS, AX, AY, V)` - Batch evaluation of accelerations and velocities
 - `evalV(s)` - Evaluate velocity at position s
@@ -26,8 +27,25 @@ The Python bindings provide access to the main GIGI functionality, specifically:
 - `get_seg_idx(s)` - Get segment index for position s
 - `evalVmax(s)` - Evaluate maximum velocity at position s
 
+### FWBW Class (Direct Usage)
+
+The `FWBW` class can be used directly with Python lambda functions to define custom G-G diagrams:
+
+- **Constructor**:
+  - `FWBW(gg_upper, gg_lower, gg_range)` - Constructor with function pointers
+- **Main Methods**:
+  - `compute(SS, KK, v0)` - Main forward-backward algorithm
+  - `evaluate(SS, AX, AY, V)` - Batch evaluation of accelerations and velocities
+  - `evalV(s)` - Evaluate velocity at position s
+  - `evalAx(s)` - Evaluate longitudinal acceleration at position s
+  - `evalAy(s)` - Evaluate lateral acceleration at position s
+  - `get_seg_idx(s)` - Get segment index for position s
+  - `evalVmax(s)` - Evaluate maximum velocity at position s
+
 ### Helper Structures
+
 - `GGVSplineData` - Container for spline data with fields: `ay`, `vx`, `ax_max`, `ax_min`, `ay_max`, `ay_min`
+- `GGRangeMaxMin` - Container for lateral acceleration limits with fields: `min`, `max` (both are function pointers)
 
 ## Installation
 
@@ -102,6 +120,35 @@ ay_at_500m = fb_solver.evalAy(500.0)
 
 print(f"Total time: {total_time:.3f} s")
 print(f"Velocity at 500m: {velocity_at_500m:.3f} m/s")
+```
+
+### Using FWBW with Python Lambda Functions
+
+```python
+import pygigi
+import numpy as np
+
+# Define G-G diagram with Python lambdas
+gg_upper = lambda ay, v: max(0.0, np.sqrt(max(0.0, 1.0 - (ay/5.0)**2)) * (8.0 - 0.05*v))
+gg_lower = lambda ay, v: -max(0.0, np.sqrt(max(0.0, 1.0 - (ay/5.0)**2)) * (12.0 - 0.08*v))
+
+# Lateral acceleration limits
+ay_max_func = lambda v: 5.0 - 0.02*v
+ay_min_func = lambda v: -5.0 + 0.01*v
+
+# Create range struct
+gg_range = pygigi.GGRangeMaxMin()
+gg_range.min = ay_min_func
+gg_range.max = ay_max_func
+
+# Create FWBW solver with lambda functions
+fwbw_solver = pygigi.FWBW(gg_upper, gg_lower, gg_range)
+
+# Optimize trajectory
+total_time = fwbw_solver.compute(s_points, curvatures, v0)
+
+# Evaluate results
+velocity_at_500m = fwbw_solver.evalV(500.0)
 ```
 
 ## Testing

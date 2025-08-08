@@ -13,6 +13,12 @@ using namespace GG;
 PYBIND11_MODULE(pygigi, m) {
     m.doc() = "Python bindings for GIGI library";
 
+    // Bind the gg_range_max_min struct
+    py::class_<gg_range_max_min>(m, "GGRangeMaxMin")
+        .def(py::init<>())
+        .def_readwrite("min", &gg_range_max_min::min, "Minimum function")
+        .def_readwrite("max", &gg_range_max_min::max, "Maximum function");
+
     // Bind the ggv_spline_data struct
     py::class_<ggv_spline_data>(m, "GGVSplineData")
         .def(py::init<>())
@@ -23,8 +29,13 @@ PYBIND11_MODULE(pygigi, m) {
         .def_readwrite("ay_max", &ggv_spline_data::ay_max, "Maximum lateral acceleration [m/s²]")
         .def_readwrite("ay_min", &ggv_spline_data::ay_min, "Minimum lateral acceleration [m/s²]");
 
-    // Bind the FWBW base class (selected methods only)
+    // Bind the FWBW base class (essential methods only)
     py::class_<FWBW>(m, "FWBW")
+        .def(py::init<const std::function<real(real, real)>&,
+                      const std::function<real(real, real)>&,
+                      const gg_range_max_min&>(),
+             "Constructor with function pointers",
+             py::arg("gg_Upper"), py::arg("gg_Lower"), py::arg("gg_range"))
         .def("compute", &FWBW::compute, 
              "Compute the forward-backward algorithm",
              py::arg("SS"), py::arg("KK"), py::arg("v0"))
