@@ -157,23 +157,15 @@ namespace GG
     const size_type i = findInterval(this->m_x, xi);
     const size_type j = findInterval(this->m_y, yi);
 
-    // const size_type i = findIntervalWithGuess(this->m_x, xi, this->m_memory_idx_x);
-    // const size_type j = findIntervalWithGuess(this->m_y, yi, this->m_memory_idx_y);
-    // // update memory indices
-    // this->m_memory_idx_x = i;
-    // this->m_memory_idx_y = j;
-
-
-
     // Corners
     const real x0 = this->m_x[i];
     const real x1 = this->m_x[i + 1];
     const real y0 = this->m_y[j];
     const real y1 = this->m_y[j + 1];
-    const real z00 = this->m_z[(i * this->m_nx) + j];
-    const real z10 = this->m_z[((i + 1) * this->m_nx) + j];
-    const real z01 = this->m_z[(i * this->m_nx) + (j + 1)];
-    const real z11 = this->m_z[((i + 1) * this->m_nx) + (j + 1)];
+    const real z00 = this->m_z[(i * this->m_ny) + j];
+    const real z10 = this->m_z[((i + 1) * this->m_ny) + j];
+    const real z01 = this->m_z[(i * this->m_ny) + (j + 1)];
+    const real z11 = this->m_z[((i + 1) * this->m_ny) + (j + 1)];
 
     // delta normalized
     const real tx = (xi - x0) / (x1 - x0);
@@ -195,7 +187,7 @@ namespace GG
     {
       for (integer i = 0; i < (integer) vec.size() - 1; ++i) 
       {
-        if (value >= vec[i] && value <= vec[i+1])
+        if (value >= vec[i] && value < vec[i+1])
         {
           seg = i;
           break;
