@@ -121,12 +121,13 @@ real FWBW::compute(std::vector<real> const &SS, std::vector<real> const &KK, con
 
 // --------------------------------------------------------------------------------------------
 
-real FWBW::compute_time() const
+real FWBW::compute_time() 
 {
   real T = 0;
-  for (const auto &seg : this->Segments)
+  for (auto &seg : this->Segments)
   {
-    T += seg.T();
+    seg.set_times(T);
+    T += seg.getT();
   }
   return T;
 }
@@ -330,9 +331,47 @@ integer FWBW::get_seg_idx(const real s) const
 
 // --------------------------------------------------------------------------------------------
 
+integer FWBW::get_seg_idx_t(const real t) const
+{
+  integer seg_idx = -1;
+  for (integer i = 0; i < this->Segments.size(); i++)
+  {
+    if (t >= this->Segments[i].getT0() && t <= this->Segments[i].getT1())
+    {
+      seg_idx = i;
+      break;
+    }
+  }
+  if (seg_idx == -1)
+  {
+    std::cerr << "Error: No segment found for t = " << t << "\n";
+    return -1;
+  }
+  return seg_idx;
+}
+
+// --------------------------------------------------------------------------------------------
+
+real FWBW::evalS(const real t) const
+{
+  const integer seg_idx = this->get_seg_idx_t(t);
+  return this->Segments[seg_idx].S(t);
+}
+
+// --------------------------------------------------------------------------------------------
+
 real FWBW::evalV(const real s) const
 {
   const integer seg_idx = this->get_seg_idx(s);
+  return this->Segments[seg_idx].V(s - this->Segments[seg_idx].s0());
+}
+
+// --------------------------------------------------------------------------------------------
+
+real FWBW::evalV_t(const real t) const
+{
+  const integer seg_idx = this->get_seg_idx_t(t);
+  auto const s = this->Segments[seg_idx].S(t);
   return this->Segments[seg_idx].V(s - this->Segments[seg_idx].s0());
 }
 
@@ -346,9 +385,27 @@ real FWBW::evalAx(const real s) const
 
 // --------------------------------------------------------------------------------------------
 
+real FWBW::evalAx_t(const real t) const
+{
+  const integer seg_idx = this->get_seg_idx_t(t);
+  auto const s = this->Segments[seg_idx].S(t);
+  return this->Segments[seg_idx].AX(s - this->Segments[seg_idx].s0());
+}
+
+// --------------------------------------------------------------------------------------------
+
 real FWBW::evalAy(const real s) const
 {
   const integer seg_idx = this->get_seg_idx(s);
+  return this->Segments[seg_idx].AY(s - this->Segments[seg_idx].s0());
+}
+
+// --------------------------------------------------------------------------------------------
+
+real FWBW::evalAy_t(const real t) const
+{
+  const integer seg_idx = this->get_seg_idx_t(t);
+  auto const s = this->Segments[seg_idx].S(t);
   return this->Segments[seg_idx].AY(s - this->Segments[seg_idx].s0());
 }
 

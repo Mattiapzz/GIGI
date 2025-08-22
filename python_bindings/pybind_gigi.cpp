@@ -56,8 +56,21 @@ PYBIND11_MODULE(pygigi, m) {
              py::arg("s"))
         .def("evalVmax", &FWBW::evalVmax,
              "Evaluate maximum velocity at position s",
-             py::arg("s"));
+             py::arg("s"))
+        .def("evalS", &FWBW::evalS,
+             "Evaluate position at time t",
+             py::arg("t"))
+        .def("evalV_t", &FWBW::evalV_t,
+             "Evaluate velocity at time t",
+             py::arg("t"))
+        .def("evalAx_t", &FWBW::evalAx_t,
+             "Evaluate acc x at time t",
+             py::arg("t"))
+        .def("evalAy_t", &FWBW::evalAy_t,
+             "Evaluate acc y at time t",
+             py::arg("t"));
 
+             
     // Bind the FB_F1_10 class
     py::class_<FB_F1_10, FWBW>(m, "FB_F1_10")
         .def(py::init<const std::vector<real>&,

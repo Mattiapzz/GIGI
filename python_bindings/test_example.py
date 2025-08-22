@@ -152,6 +152,17 @@ def example_usage():
     print(f"Gravity: {pygigi.GRAVITY} m/s²")
     print(f"Pi: {pygigi.PI}")
     print(f"Degrees to radians: {pygigi.DEG2RAD}")
+
+
+    ## add evaluation at specific time. evalV_t evalS evalAx_t evalAy_t in linsspace 0-total_time
+    print("\nEvaluating at specific time points...")
+    for t in np.linspace(0, total_time, num=50):
+        s = fb110.evalS(t)
+        v = fb110.evalV_t(t)
+        ax = fb110.evalAx_t(t)
+        ay = fb110.evalAy_t(t)
+        
+        print(f"At t={t:.2f} s: s={s:.2f} m, v={v:.2f} m/s, ax={ax:.2f} m/s², ay={ay:.2f} m/s²")
     
     # Create plots
     print("\nCreating plots...")

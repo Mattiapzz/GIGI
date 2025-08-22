@@ -69,6 +69,7 @@ public:
   // main methods
   // core Forward-Backward method
   real compute(std::vector<real> const &SS, std::vector<real> const &KK, real v0);
+  private:
   // compute Vmax vector
   void compute_Vmax();
   // Forward step
@@ -76,7 +77,8 @@ public:
   // Backward step
   void BW();
   // compute time
-  [[nodiscard]] real compute_time() const;
+  [[nodiscard]] real compute_time();
+  public:
   // compute the distance with sign.
   [[nodiscard]] real signed_distance(real ax, real ay, real v) const;
   // check if a point is in the range
@@ -90,6 +92,12 @@ public:
   [[nodiscard]] real evalAy(real s) const;
   [[nodiscard]] integer get_seg_idx(real s) const;
   [[nodiscard]] real evalVmax(const real s) const;
+  [[nodiscard]] real evalS(real t) const;
+  [[nodiscard]] integer get_seg_idx_t(real t) const;
+
+  [[nodiscard]] real evalV_t(const real t) const;
+  [[nodiscard]] real evalAx_t(const real t) const;
+  [[nodiscard]] real evalAy_t(const real t) const;
 
   // get dump
   [[nodiscard]] std::vector<int> get_dump() const { return this->dump_seg_id; }
